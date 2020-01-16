@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Romanos</title>
+        <style>
+            .control {
+                border-color: black;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Conversor a Romanos</h1>
+        <input id="arabigo" class="control" type="number" value="32"><br/>
+        <input id="romano" class="control" type="text" disabled><br/>
+        <button id="btnAceptar">Aceptar</button>
+    </body>
+    <script>
+        const btn = document.getElementById("btnAceptar");
+        const lblRoman = document.getElementById("romano")
+        const xhr = new XMLHttpRequest();
+        
+        function reqHandler() {
+            if (this.readyState === 4 && this.status == 200) { 
+            /* Comprobamos que el estado es 4 (operación completada)
+                 * los estados que podemos comprobar son:
+                 * 0 = UNSET (No se ha llamado al método open())
+                 * 1 = OPENED (Se ha llamado al método open())
+                 * 2 = HEADERS_RECEIVED (Se ha llamado al método send())
+                 * 3 = LOADING (Se está recibiendo la respuesta)
+                 * 4 = DONE (Operacion completada)
+            */ 
+                console.log(this.responseText);
+                let respuesta = JSON.parse(this.responseText)
+
+                if (respuesta.correct) {
+                    lblRoman.value = respuesta.result.romano;
+                } else {
+                    lblRoman.value = respuesta.message;
+                }
+            }
+        }
+
+        function btnClickHandler(ev) {
+            const valor = document.getElementById("arabigo").value;
+            console.log(valor);
+
+            xhr.open('GET', `http://localhost:5000/toroman/${valor}`, true);
+            xhr.send();
+        }
+    
+        xhr.onload = reqHandler
+        btn.addEventListener('click', btnClickHandler)
+    </script>
+</html>
